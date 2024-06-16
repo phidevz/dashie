@@ -6,7 +6,7 @@ interface Props<T> {
   data: T;
   for: keyof T;
   label: string;
-  type: astroHTML.JSX.HTMLInputTypeAttribute;
+  type: astroHTML.JSX.HTMLInputTypeAttribute | "select";
 }
 
 const {
@@ -37,5 +37,28 @@ const value = remainder.data[inputFor];
   <label for={inputFor} class="group-data-[orientation=vertical]:px-2"
     >{label}</label
   >
-  <input type={inputType} name={inputFor} class={inputClass} value={value} />
+  <div class="flex flex-row gap-4 items-center">
+    <slot name="preview" />
+    {
+      inputType === "select" ? (
+        <select
+          name={inputFor}
+          class:list={[
+            inputClass,
+            "*:text-slate-500 *:dark:text-slate-400 *:bg-white dark:*:bg-slate-900",
+          ]}
+          value={value}
+        >
+          <slot name="options" />
+        </select>
+      ) : (
+        <input
+          type={inputType}
+          name={inputFor}
+          class={inputClass}
+          value={value}
+        />
+      )
+    }
+  </div>
 </div>

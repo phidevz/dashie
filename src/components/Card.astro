@@ -3,7 +3,7 @@ import type { CardSelect } from "astro:db";
 
 interface Props extends CardSelect {}
 
-const { href, title } = Astro.props;
+const { href, title, iconSrc } = Astro.props;
 ---
 
 <a
@@ -12,7 +12,7 @@ const { href, title } = Astro.props;
   target="_blank"
 >
   <div class="card-body flex flex-col justify-between">
-    <img class="h-16 mx-auto" src="/favicon.svg" />
+    <img class="h-16 mx-auto" src={iconSrc ?? "/favicon.svg"} />
     <h5 class="card-title">{title}</h5>
   </div>
 </a>
