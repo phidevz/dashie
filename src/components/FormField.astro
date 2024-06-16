@@ -1,0 +1,41 @@
+---
+import { inputClass } from "@/utils/styles";
+
+interface Props<T> {
+  class?: string;
+  data: T;
+  for: keyof T;
+  label: string;
+  type: astroHTML.JSX.HTMLInputTypeAttribute;
+}
+
+const {
+  class: ptClass,
+  for: inputFor,
+  type: inputType,
+  label,
+  ...remainder
+} = Astro.props;
+const value = remainder.data[inputFor];
+---
+
+<div
+  class:list={[
+    ptClass,
+    "group-data-[orientation=horizontal]:grid",
+    "group-data-[orientation=horizontal]:grid-cols-subgrid",
+    "group-data-[orientation=horizontal]:col-start-1",
+    "group-data-[orientation=horizontal]:col-span-4",
+    "group-data-[orientation=horizontal]:items-center",
+    "group-data-[orientation=horizontal]:justify-items-end",
+    "group-data-[orientation=horizontal]:gap-4",
+    "group-data-[orientation=vertical]:flex",
+    "group-data-[orientation=vertical]:flex-col",
+    "group-data-[orientation=vertical]:gap-1",
+  ]}
+>
+  <label for={inputFor} class="group-data-[orientation=vertical]:px-2"
+    >{label}</label
+  >
+  <input type={inputType} name={inputFor} class={inputClass} value={value} />
+</div>

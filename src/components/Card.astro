@@ -1,0 +1,18 @@
+---
+import type { CardSelect } from "astro:db";
+
+interface Props extends CardSelect {}
+
+const { href, title } = Astro.props;
+---
+
+<a
+  href={href}
+  class="card rounded-md ratio ratio-1x1 max-w-40 text-center overflow-hidden shadow-lg bg-transparent text-inherit border-slate-500"
+  target="_blank"
+>
+  <div class="card-body flex flex-col justify-between">
+    <img class="h-16 mx-auto" src="/favicon.svg" />
+    <h5 class="card-title">{title}</h5>
+  </div>
+</a>

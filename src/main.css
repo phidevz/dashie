@@ -1,0 +1,16 @@
+@layer tailwind-base, bootstrap, tailwind-utilities;
+
+@import './bootstrap.css' layer(bootstrap);
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+  
+  .navbar {
+    --bs-navbar-brand-font-size: 1.5rem;
+  }
+}

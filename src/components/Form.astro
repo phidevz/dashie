@@ -1,0 +1,39 @@
+---
+import { deleteAction, createAction, editAction } from "@/utils/actions";
+
+interface Props {
+  action: typeof createAction | typeof editAction;
+  orientation?: "horizontal" | "vertical";
+  class?: string;
+}
+
+const { class: ptClass, action, ...remainder } = Astro.props;
+const orientation = remainder.orientation ?? "vertical";
+const formClass =
+  orientation === "horizontal"
+    ? "grid grid-cols-[max-content_1fr] gap-2"
+    : "flex flex-col gap-4";
+---
+
+<script type="module" src="/src/utils/actions.ts"></script>
+<form
+  id={action}
+  data-orientation={orientation}
+  class:list={[ptClass, formClass, "group"]}
+  method="post"
+  enctype="application/x-www-form-urlencoded"
+>
+  <slot />
+  <input type="hidden" name="__action" value={action} />
+</form>
+{
+  action === "edit" ? (
+    <form
+      id={deleteAction}
+      method="post"
+      enctype="application/x-www-form-urlencoded"
+    >
+      <input type="hidden" name="__action" value={deleteAction} />
+    </form>
+  ) : null
+}

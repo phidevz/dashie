@@ -1,0 +1,96 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import DAL from "@/utils/data";
+import SaveButton from "@/components/SaveButton.astro";
+import DeleteButton from "@/components/DeleteButton.astro";
+import Form from "@/components/Form.astro";
+import FormButtons from "@/components/FormButtons.astro";
+import FormField from "@/components/FormField.astro";
+import { type Message } from "@/utils/styles";
+import MessageBanner from "@/components/MessageBanner.astro";
+import { deleteAction, editAction } from "@/utils/actions";
+
+const id = Astro.params.id;
+
+if (!id) {
+  return Astro.redirect(import.meta.env.BASE_URL);
+}
+
+let message: Message | undefined = undefined;
+let section;
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const action = data.get("__action");
+    if (!action) {
+      message = {
+        severity: "error",
+        text: "Invalid request",
+      };
+    } else {
+      if (action === editAction) {
+        if (data.has("id")) {
+          data.delete("id");
+        }
+        const updateDto = Object.fromEntries(data.entries());
+        section = await DAL.section.update(id, updateDto);
+        console.log("after update", section);
+        message = {
+          severity: "info",
+          text: "Update successful",
+        };
+      } else if (action === deleteAction) {
+        await DAL.section.delete(id);
+        return Astro.redirect(import.meta.env.BASE_URL);
+      } else {
+        message = {
+          severity: "warning",
+          text: "Unknown action",
+        };
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+} else {
+  section = await DAL.section.findById(id);
+}
+
+if (!section) {
+  return Astro.redirect(import.meta.env.BASE_URL);
+}
+
+const cards = await DAL.card.listForSection(section.id);
+---
+
+<Layout title="Edit section" class="flex flex-col gap-4">
+  {message && <MessageBanner message={message} />}
+  <Form action="edit" orientation="vertical">
+    <FormField data={section} for="title" type="text" label="Title" />
+    <FormField
+      data={section}
+      for="ordinal"
+      type="number"
+      label="Ordinal (lower means further up)"
+    />
+    <FormButtons>
+      <SaveButton />
+      <DeleteButton />
+    </FormButtons>
+  </Form>
+  <hr />
+  <div>Cards</div>
+  <ul>
+    {
+      cards.map((card) => (
+        <li>
+          <span>{card.title}</span>
+          <a href={"/edit/card/" + card.id}>Edit</a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

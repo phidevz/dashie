@@ -1,0 +1,22 @@
+---
+import { type Message, messageStyles } from "@/utils/styles";
+
+interface Props {
+  message: Message;
+}
+
+const { severity, text } = Astro.props.message;
+const { label, boxClass } = messageStyles[severity];
+---
+
+<Fragment slot={"message-banner"}>
+  <div
+    class:list={[
+      "py-4 px-6 border border-l-[6px] rounded-lg shadow-lg",
+      boxClass,
+    ]}
+  >
+    <span class="font-bold mr-1">{label}:</span>
+    <span>{text}</span>
+  </div>
+</Fragment>

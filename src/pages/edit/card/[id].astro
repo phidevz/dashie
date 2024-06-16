@@ -1,0 +1,105 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { inputClass, type Message } from "@/utils/styles";
+import DAL from "@/utils/data";
+import SaveButton from "@/components/SaveButton.astro";
+import FormButtons from "@/components/FormButtons.astro";
+import DeleteButton from "@/components/DeleteButton.astro";
+
+const id = Astro.params.id;
+
+if (!id) {
+  return Astro.redirect(import.meta.env.BASE_URL);
+}
+
+let message: Message | undefined = undefined;
+
+let card;
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    if (data.has("id")) {
+      data.delete("id");
+    }
+    const updateDto = Object.fromEntries(data.entries());
+    card = await DAL.card.update(id, updateDto);
+    console.log("after update", card)
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      message= {
+        severity: "error",
+        text: error.message
+      }
+    }
+  }
+} 
+if(!card) {
+  card = await DAL.card.findById(id);
+}
+
+if (!card) {
+  return Astro.redirect(import.meta.env.BASE_URL);
+}
+
+const sections = await DAL.section.list();
+---
+
+<Layout title="Edit card">
+    {!!message ? (<div>{message.text}</div>): null}
+  <form
+    class="flex flex-col gap-4"
+    method="post"
+    enctype="application/x-www-form-urlencoded"
+  >
+    <label for="title" class="px-2">Title</label>
+    <input
+      type="text"
+      name={"title"}
+      class:list={inputClass}
+      value={card.title}
+    />
+    <label for="href" class="px-2">Link target</label>
+    <input
+      type="text"
+      name={"href"}
+      class:list={inputClass}
+      value={card.href}
+    />
+    <label for="iconSrc">Icon</label>
+    <div class="flex flex-row gap-2 items-center">
+      <img
+        class="h-8 w-8"
+        src={card.iconSrc}
+        crossorigin="anonymous"
+        hidden={!card.iconSrc}
+      />
+      <input
+        class={inputClass}
+        type="text"
+        name={`iconSrc`}
+        value={card.iconSrc}
+      />
+    </div>
+
+    <label for="sectionId">Section</label>
+    <select
+      name="sectionId"
+      class:list={[
+        inputClass,
+        "*:text-slate-500 *:dark:text-slate-400 *:bg-white dark:*:bg-slate-900",
+      ]}
+    >
+      {
+        sections.map((section) => (
+          <option value={section.id}>{section.title}</option>
+        ))
+      }
+    </select>
+    <FormButtons>
+      <SaveButton />
+      <DeleteButton />
+    </FormButtons>
+  </form>
+</Layout>
