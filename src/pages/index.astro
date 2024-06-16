@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 import DAL from "@/utils/data";
+import editImage from "@/assets/edit.svg?raw";
 
 const result = await DAL.section.listWithCards();
 ---
@@ -12,7 +13,9 @@ const result = await DAL.section.listWithCards();
       <section class="flex flex-row flex-wrap gap-4">
         <div class="w-full flex flex-row justify-between">
           <h2 class="text-2xl font-bold">{section.title}</h2>
-          <a href={`/edit/section/${section.id}`}>edit</a>
+          <a href={`/edit/section/${section.id}`}>
+            <Fragment set:html={editImage} />
+          </a>
         </div>
         {section.cards.map((card) => (
           <Card {...card} />

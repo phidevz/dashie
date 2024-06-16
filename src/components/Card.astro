@@ -8,10 +8,10 @@ const { href, title, iconSrc } = Astro.props;
 
 <a
   href={href}
-  class="card rounded-md ratio ratio-1x1 max-w-40 text-center overflow-hidden shadow-lg bg-transparent text-inherit border-slate-500"
+  class="flex flex-col border rounded-md ratio ratio-1x1 max-w-40 text-center overflow-hidden shadow-lg hover:dark:bg-slate-800/20 text-inherit border-slate-500 break-words"
   target="_blank"
 >
-  <div class="card-body flex flex-col justify-between">
+  <div class="card-body flex flex-col flex-auto justify-between p-4">
     <img class="h-16 mx-auto" src={iconSrc ?? "/favicon.svg"} />
     <h5 class="card-title">{title}</h5>
   </div>

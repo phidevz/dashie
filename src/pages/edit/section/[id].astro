@@ -9,6 +9,7 @@ import FormField from "@/components/FormField.astro";
 import { type Message } from "@/utils/styles";
 import MessageBanner from "@/components/MessageBanner.astro";
 import { deleteAction, editAction } from "@/utils/actions";
+import editImage from "@/assets/edit.svg?raw";
 
 const id = Astro.params.id;
 
@@ -66,7 +67,7 @@ if (!section) {
 const cards = await DAL.card.listForSection(section.id);
 ---
 
-<Layout title="Edit section" class="flex flex-col gap-4">
+<Layout title="Edit section" class="flex flex-col gap-2">
   {message && <MessageBanner message={message} />}
   <Form action="edit" orientation="vertical">
     <FormField data={section} for="title" type="text" label="Title" />
@@ -81,14 +82,18 @@ const cards = await DAL.card.listForSection(section.id);
       <DeleteButton />
     </FormButtons>
   </Form>
-  <hr />
-  <div>Cards</div>
-  <ul>
+  <hr class="border-slate-400/70 mt-4" />
+  <div class="text-xl font-semibold">Cards</div>
+  <ul class="flex flex-col gap-2 list-inside list-disc">
     {
       cards.map((card) => (
-        <li>
-          <span>{card.title}</span>
-          <a href={"/edit/card/" + card.id}>Edit</a>
+        <li class="list-item">
+          <span class="inline-flex flex-row items-center gap-4">
+            <span>{card.title}</span>
+            <a href={"/edit/card/" + card.id}>
+              <Fragment set:html={editImage} />
+            </a>
+          </span>
         </li>
       ))
     }
