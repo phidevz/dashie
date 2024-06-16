@@ -1,7 +1,8 @@
 {
   "name": "dashie",
   "type": "module",
-  "version": "0.0.1",
+  "private": true,
+  "version": "0.0.0",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -20,13 +21,12 @@
     "primereact": "^10.6.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "typescript": "^5.4.5",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.4"
+    "tailwindcss": "^3.4.4",
+    "typescript": "rc"
   }
 }

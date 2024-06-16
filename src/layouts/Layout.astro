@@ -1,4 +1,7 @@
 ---
+import splitscreenAddImage from "@/assets/splitscreen_add.svg?raw";
+import variableAddImage from "@/assets/variable_add.svg?raw";
+
 interface Props {
   title: string;
   class?: string;
@@ -23,24 +26,33 @@ const baseUrl = import.meta.env.BASE_URL;
     <title>{title}</title>
   </head>
   <body
-    class="min-h-screen overflow-y-auto antialiased text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900"
+    class="min-h-screen overflow-y-auto antialiased text-slate-700 dark:text-slate-400 bg-slate-100 dark:bg-slate-900"
   >
     <header
-      class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-white supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75"
+      class="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 border-b border-slate-900/10 dark:border-slate-50/[0.06] bg-slate-200 supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75"
     >
-      <a
-        href={baseUrl}
-        class="max-w-8xl mx-auto py-4 lg:px-8 text-2xl flex flex-row items-center gap-2"
+      <div
+        class="md:max-w-4xl lg:max-w-8xl px-4 sm:px-8 mx-auto py-4 text-2xl flex flex-row items-center justify-between"
       >
-        <img class="aspect-square h-8" src="/favicon.svg" />
-        <h1
-          class="border-b border-slate-900/10 lg:border-0 dark:border-slate-300/10 mx-4 lg:mx-0 font-semibold text-slate-700 dark:text-slate-200"
-        >
-          Dashboard
-        </h1>
-      </a>
+        <a href={baseUrl} class="flex flex-row items-center gap-2">
+          <img class="aspect-square h-8" src="/favicon.svg" />
+          <h1
+            class="border-b border-slate-900/10 lg:border-0 dark:border-slate-300/10 mx-4 lg:mx-0 font-semibold text-slate-700 dark:text-slate-200"
+          >
+            Dashboard
+          </h1>
+        </a>
+        <div class="flex flex-row items-center gap-2">
+          <a href={`/new/section`} title="Add section">
+            <Fragment set:html={splitscreenAddImage} />
+          </a>
+          <a href={`/new/card`} title="Add card">
+            <Fragment set:html={variableAddImage} />
+          </a>
+        </div>
+      </div>
     </header>
-    <main class:list={["max-w-8xl mx-auto py-4 lg:px-8", ptClass]}>
+    <main class:list={["md:max-w-4xl lg:max-w-8xl px-4 sm:px-8 mx-auto py-4", ptClass]}>
       <slot name="message-banner" />
       <slot />
     </main>

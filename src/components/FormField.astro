@@ -4,9 +4,10 @@ import { inputClass } from "@/utils/styles";
 interface Props<T> {
   class?: string;
   data: T;
-  for: keyof T;
+  for: T extends unknown ? string : keyof T;
   label: string;
   type: astroHTML.JSX.HTMLInputTypeAttribute | "select";
+  required?: boolean;
 }
 
 const {
@@ -14,9 +15,10 @@ const {
   for: inputFor,
   type: inputType,
   label,
+  required,
   ...remainder
 } = Astro.props;
-const value = remainder.data[inputFor];
+const value = !!remainder.data ? remainder.data[inputFor] : undefined;
 ---
 
 <div
@@ -57,6 +59,7 @@ const value = remainder.data[inputFor];
           name={inputFor}
           class={inputClass}
           value={value}
+          required={!!required}
         />
       )
     }

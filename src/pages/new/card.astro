@@ -3,22 +3,22 @@ import Layout from "@/layouts/Layout.astro";
 import DAL, { handleCreate, removeId } from "@/utils/data";
 import Form from "@/components/Form.astro";
 import FormField from "@/components/FormField.astro";
-import type { SectionInsert } from "astro:db";
+import type { CardInsert } from "astro:db";
 import FormButtons from "@/components/FormButtons.astro";
 import SaveButton from "@/components/SaveButton.astro";
 import MessageBanner from "@/components/MessageBanner.astro";
 
-const result = await handleCreate(Astro, removeId, DAL.section.create);
+const result = await handleCreate(Astro, removeId, DAL.card.create);
 if (result.result === "response") {
   return result.response;
 }
 
 const message = result.message;
 
-const dummyData: SectionInsert = undefined as unknown as SectionInsert;
+const dummyData: CardInsert = undefined as unknown as CardInsert;
 ---
 
-<Layout title="New section">
+<Layout title="New card">
   {message && <MessageBanner message={message} />}
   <Form action="create">
     <FormField

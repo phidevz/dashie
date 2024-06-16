@@ -1,17 +1,49 @@
+import type { AstroGlobal } from "astro";
 import {
   Cards,
   Sections,
   db,
   eq,
+  type CardInsert,
   type CardSelect,
   type SectionInsert,
   type SectionSelect,
 } from "astro:db";
-import { v4 as uuid } from "uuid";
+import { v7 as uuid } from "uuid";
+import type { Message } from "./styles";
+import { createAction, editAction, deleteAction } from "./actions";
+
+type CreateResult<T> =
+  | { result: "response"; response: Response }
+  | {
+      result: "render";
+      message?: Message;
+      data?: T;
+    };
+
+type EditOrDeleteResult<T> = {
+  action?: typeof editAction | typeof deleteAction;
+} & (
+  | { result: "response"; response: Response }
+  | {
+      result: "render";
+      message?: Message;
+      data?: T;
+    }
+);
 
 type SectionWithCards = SectionSelect & { cards: CardSelect[] };
 
 const card = {
+  create: async function (data: Omit<CardInsert, "id">) {
+    const id = uuid();
+
+    const entity: CardInsert = { ...data, id };
+
+    const raw = await db.insert(Cards).values(entity).returning(Cards);
+
+    return raw[0];
+  },
   findById: async (id: CardSelect["id"]) => {
     const raw: CardSelect[] = await db
       .select()
@@ -43,17 +75,17 @@ const card = {
       .where(eq(Cards.id, id))
       .returning(Cards);
 
-    return raw[0];
+    return raw[0]!;
   },
   delete: async function (id: CardSelect["id"]) {
     const raw: CardSelect[] = await db.delete(Cards).where(eq(Cards.id, id));
 
     console.log("deleted", raw);
 
-    return raw[0];
+    return raw[0]!;
   },
   deleteForSection: async function (sectionId: SectionSelect["id"]) {
-    const raw: {rowsAffected: number} = await db
+    const raw: { rowsAffected: number } = await db
       .delete(Cards)
       .where(eq(Cards.sectionId, sectionId));
 
@@ -62,17 +94,14 @@ const card = {
 };
 
 const section = {
-  create: async function (
-    title: SectionInsert["title"],
-    ordinal: SectionInsert["ordinal"]
-  ) {
+  create: async function (data: Omit<SectionInsert, "id">) {
     const id = uuid();
 
-    const entity: SectionInsert = {
-      id,
-      title,
-      ordinal,
-    };
+    const entity: SectionInsert = { ...data, id };
+
+    const raw = await db.insert(Sections).values(entity).returning(Sections);
+
+    return raw[0];
   },
   findById: async (id: SectionSelect["id"]) => {
     const raw: SectionSelect[] = await db
@@ -148,3 +177,178 @@ export default {
   section,
   card,
 };
+
+export function removeId(formData: FormData) {
+  if (formData.has("id")) {
+    formData.delete("id");
+  }
+  return formData;
+}
+
+export async function handleCreate<T>(
+  astro: Readonly<AstroGlobal>,
+  sanitizeForm: (formData: FormData) => FormData,
+  onCreate: (dto: Omit<T, "id">) => Promise<T>
+): Promise<CreateResult<T>> {
+  if (astro.request.method === "POST") {
+    try {
+      let formData = await astro.request.formData();
+      for (const [key, value] of formData.entries()) {
+        if (!value || value === "") {
+          formData.delete(key);
+        }
+      }
+      const action = formData.get("__action");
+      formData.delete("__action");
+      if (!action) {
+        astro.response.status = 400;
+        return {
+          result: "render",
+          message: {
+            severity: "error",
+            text: "Invalid request",
+          },
+        };
+      } else {
+        if (action === createAction) {
+          formData = sanitizeForm(formData);
+          const dto = Object.fromEntries(formData.entries()) as Parameters<
+            typeof onCreate
+          >[0];
+          const data = await onCreate(dto);
+
+          astro.response.status = 201;
+          return {
+            result: "render",
+            message: {
+              severity: "info",
+              text: "Create successful",
+            },
+            data,
+          };
+        } else {
+          astro.response.status = 400;
+          return {
+            result: "render",
+            message: {
+              severity: "warning",
+              text: "Unknown action",
+            },
+          };
+        }
+      }
+    } catch (error) {
+      astro.response.status = 500;
+      if (error instanceof Error) {
+        console.error(error.message);
+        return {
+          result: "render",
+          message: {
+            severity: "error",
+            text: error.message,
+          },
+        };
+      }
+
+      return {
+        result: "render",
+        message: {
+          severity: "error",
+          text: "An unexpected error occurred",
+        },
+      };
+    }
+  }
+
+  return {
+    result: "render",
+  };
+}
+
+export async function handleEditOrDelete<T extends { id: string }>(
+  astro: Readonly<AstroGlobal>,
+  id: string,
+  sanitizeForm: (formData: FormData) => FormData,
+  onEdit: (id: T["id"], dto: Omit<T, "id">) => Promise<T>,
+  onDelete: (id: T["id"]) => Promise<T>
+): Promise<EditOrDeleteResult<T>> {
+  if (astro.request.method === "POST") {
+    try {
+      let formData = await astro.request.formData();
+      for (const [key, value] of formData.entries()) {
+        if (!value || value === "") {
+          formData.delete(key);
+        }
+      }
+      const action = formData.get("__action");
+      formData.delete("__action");
+      if (!action) {
+        astro.response.status = 400;
+        return {
+          result: "render",
+          message: {
+            severity: "error",
+            text: "Invalid request",
+          },
+        };
+      } else {
+        if (action === editAction) {
+          formData = sanitizeForm(formData);
+          const dto = Object.fromEntries(formData.entries()) as Parameters<
+            typeof onEdit
+          >[1];
+          const data = await onEdit(id, dto);
+
+          astro.response.status = 201;
+          return {
+            result: "render",
+            message: {
+              severity: "info",
+              text: "Create successful",
+            },
+            data,
+          };
+        } else if (action === deleteAction) {
+          await onDelete(id);
+          return {
+            result: "response",
+            response: astro.redirect(import.meta.env.BASE_URL),
+          };
+        } else {
+          astro.response.status = 400;
+          return {
+            result: "render",
+            message: {
+              severity: "warning",
+              text: "Unknown action",
+            },
+          };
+        }
+      }
+    } catch (error) {
+      astro.response.status = 500;
+      if (error instanceof Error) {
+        console.error(error.message);
+        return {
+          result: "render",
+          message: {
+            severity: "error",
+            text: error.message,
+          },
+        };
+      }
+
+      return {
+        result: "render",
+        message: {
+          severity: "error",
+          text: "An unexpected error occurred",
+        },
+      };
+    }
+  }
+
+  return {
+    result: "render",
+  };
+}
