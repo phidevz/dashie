@@ -1,0 +1,8 @@
+.gitignore
+.git/
+node_modules/
+*.md
+.vscode/
+dist/
+.astro/
+.srv/

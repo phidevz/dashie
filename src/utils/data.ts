@@ -312,7 +312,7 @@ export async function handleEditOrDelete<T extends { id: string }>(
           await onDelete(id);
           return {
             result: "response",
-            response: astro.redirect(import.meta.env.BASE_URL),
+            response: astro.redirect("/"),
           };
         } else {
           astro.response.status = 400;
