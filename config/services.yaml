@@ -1,0 +1,120 @@
+# Header configuration for parsing user data from identity provider
+headers:
+  user: Remote-User
+  email: Remote-Email
+  name: Remote-Name
+  groups: Remote-Groups
+
+# Service definitions with role-based access
+# Use role '*' for services accessible to all users regardless of their roles
+services:
+  - category: Development
+    items:
+      - name: GitHub
+        description: Source code repository and version control
+        url: https://github.com/company
+        icon: Wrench
+        roles:
+          - developer
+          - admin
+      
+      - name: CI/CD Pipeline
+        description: Continuous integration and deployment
+        url: https://ci.company.com
+        icon: Rocket
+        roles:
+          - developer
+          - admin
+      
+      - name: API Documentation
+        description: Internal API reference and guides
+        url: https://docs.company.com
+        icon: BookOpen
+        roles:
+          - developer
+          - admin
+
+  - category: Infrastructure
+    items:
+      - name: AWS Console
+        description: Cloud infrastructure management
+        url: https://console.aws.amazon.com
+        icon: Cloud
+        roles:
+          - admin
+          - devops
+      
+      - name: Monitoring
+        description: Application performance and logs
+        url: https://monitoring.company.com
+        icon: BarChart3
+        roles:
+          - admin
+          - devops
+          - developer
+      
+      - name: Database Admin
+        description: Database management and queries
+        url: https://db.company.com
+        icon: Database
+        roles:
+          - admin
+          - developer
+
+  - category: Analytics
+    items:
+      - name: Analytics Dashboard
+        description: User behavior and product metrics
+        url: https://analytics.company.com
+        icon: TrendingUp
+        roles:
+          - admin
+          - analyst
+          - product
+      
+      - name: Business Intelligence
+        description: Data warehouse and reporting
+        url: https://bi.company.com
+        icon: Briefcase
+        roles:
+          - admin
+          - analyst
+
+  - category: Communication
+    items:
+      - name: Slack
+        description: Team communication and collaboration
+        url: https://company.slack.com
+        icon: MessageSquare
+        roles:
+          - "*"
+      
+      - name: Email
+        description: Corporate email system
+        url: https://mail.company.com
+        icon: Mail
+        roles:
+          - "*"
+
+  - category: Admin
+    items:
+      - name: User Management
+        description: Manage users and permissions
+        url: https://admin.company.com/users
+        icon: Users
+        roles:
+          - admin
+      
+      - name: Security Settings
+        description: Security policies and configurations
+        url: https://admin.company.com/security
+        icon: Lock
+        roles:
+          - admin
+      
+      - name: Audit Logs
+        description: System activity and compliance logs
+        url: https://admin.company.com/logs
+        icon: ClipboardList
+        roles:
+          - admin
