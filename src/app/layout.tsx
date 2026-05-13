@@ -7,30 +7,30 @@ import { ThemeProvider } from "~/components/theme-provider";
 import { env } from "~/env";
 
 export const metadata: Metadata = {
-	title: env.NEXT_PUBLIC_HEADING,
-	icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: env.NEXT_PUBLIC_HEADING,
+  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 const geist = Geist({
-	subsets: ["latin"],
-	variable: "--font-geist-sans",
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
 });
 
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{ children: ReactNode }>) {
-	return (
-		<html lang="en" className={`${geist.variable}`}>
-			<body>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					{children}
-				</ThemeProvider>
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en" suppressHydrationWarning className={`${geist.variable}`}>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }
